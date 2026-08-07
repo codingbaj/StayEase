@@ -1,5 +1,6 @@
 package com.codder.stayease.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class RoomType {
 
     private double rent;
 
+    @JsonManagedReference("roomtype-room")
     @OneToMany(mappedBy = "roomType")
     private List<Room> rooms;
 

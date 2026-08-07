@@ -18,16 +18,17 @@ public class Room {
 
     private String status;
 
-    @JsonBackReference
+    @JsonBackReference("floor-room")
     @ManyToOne
     @JoinColumn(name = "floor_id")
     private Floor floor;
 
+    @JsonBackReference("roomtype-room")
     @ManyToOne
     @JoinColumn(name = "room_type_id")
     private RoomType roomType;
 
-    @JsonManagedReference
+    @JsonManagedReference("room-bed")
     @OneToMany(mappedBy = "room")
     private List<Bed> beds;
 
