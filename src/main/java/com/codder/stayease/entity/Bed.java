@@ -17,7 +17,7 @@ public class Bed {
 
     private String status;
 
-    @JsonBackReference
+    @JsonBackReference("room-bed")
     @ManyToOne
     @JoinColumn(name = "room_id")
     private Room room;
