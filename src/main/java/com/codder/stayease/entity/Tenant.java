@@ -23,6 +23,8 @@ public class Tenant {
 
     private String occupation;
 
+
+    @JsonBackReference("user-tenant")
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;

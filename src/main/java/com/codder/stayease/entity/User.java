@@ -1,5 +1,6 @@
 package com.codder.stayease.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -25,6 +26,8 @@ public class User {
     @Column(nullable = false, unique = true)
     private String phone;
 
+
+    @JsonBackReference("user-tenant")
     @OneToOne(mappedBy = "user")
     private Tenant tenant;
 

@@ -20,7 +20,7 @@ public class UserController {
 
         return new ApiResponse(
                 true,
-                "User added successfully",
+                savedUser.getName()+" added successfully",
                 savedUser
         );
     }
