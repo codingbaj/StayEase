@@ -1,6 +1,7 @@
 package com.codder.stayease.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -35,6 +36,7 @@ public class Tenant {
     @OneToMany(mappedBy = "tenant")
     private List<Rent> rents;
 
+    @JsonManagedReference("tenant-complaint")
     @OneToMany(mappedBy = "tenant")
     private List<Complaint> complaints;
 

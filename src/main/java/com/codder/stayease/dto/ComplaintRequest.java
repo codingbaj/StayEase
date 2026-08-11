@@ -1,48 +1,29 @@
-package com.codder.stayease.entity;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
+package com.codder.stayease.dto;
 
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "complaint")
-public class Complaint {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+public class ComplaintRequest {
 
     private String title;
-
     private String description;
-
     private LocalDate complaintDate;
-
     private String status;
+    private long tenantId;
 
-    @JsonBackReference("tenant-complaint")
-    @ManyToOne
-    @JoinColumn(name = "tenant_id")
-    private Tenant tenant;
+    public ComplaintRequest(String title,
+                            String description,
+                            LocalDate complaintDate,
+                            String status,
+                            long tenantId) {
 
-    public Complaint(String title, String description,
-                     LocalDate complaintDate, String status) {
         this.title = title;
         this.description = description;
         this.complaintDate = complaintDate;
         this.status = status;
+        this.tenantId = tenantId;
     }
 
-    public Complaint() {
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
+    public ComplaintRequest() {
     }
 
     public String getTitle() {
@@ -77,11 +58,11 @@ public class Complaint {
         this.status = status;
     }
 
-    public Tenant getTenant() {
-        return tenant;
+    public long getTenantId() {
+        return tenantId;
     }
 
-    public void setTenant(Tenant tenant) {
-        this.tenant = tenant;
+    public void setTenantId(long tenantId) {
+        this.tenantId = tenantId;
     }
 }
