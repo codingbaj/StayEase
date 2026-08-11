@@ -78,4 +78,19 @@ public class UserController {
                 null
         );
     }
+
+    @PutMapping("/update-password/{id}")
+    public ApiResponse updatePassword(
+            @PathVariable long id,
+            @RequestParam String password) {
+
+        User user = service.updatePassword(id, password);
+
+        return new ApiResponse(
+                true,
+                "Password updated successfully",
+                user
+        );
+    }
+
 }
