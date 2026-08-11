@@ -1,20 +1,11 @@
-package com.codder.stayease.entity;
-
-import jakarta.persistence.*;
+package com.codder.stayease.dto;
 
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "notice")
-public class Notice {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+public class NoticeRequest {
 
     private String title;
 
-    @Column(length = 2000)
     private String description;
 
     private LocalDate noticeDate;
@@ -28,13 +19,13 @@ public class Notice {
     private String createdBy;
 
 
-    public Notice(String title,
-                  String description,
-                  LocalDate noticeDate,
-                  LocalDate expiryDate,
-                  String priority,
-                  String status,
-                  String createdBy) {
+    public NoticeRequest(String title,
+                         String description,
+                         LocalDate noticeDate,
+                         LocalDate expiryDate,
+                         String priority,
+                         String status,
+                         String createdBy) {
 
         this.title = title;
         this.description = description;
@@ -46,16 +37,7 @@ public class Notice {
     }
 
 
-    public Notice() {
-    }
-
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
+    public NoticeRequest() {
     }
 
 
