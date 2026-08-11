@@ -1,57 +1,36 @@
-package com.codder.stayease.entity;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
+package com.codder.stayease.dto;
 
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "rent")
-public class Rent {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+public class RentRequest {
 
     private int month;
-
     private int year;
-
     private LocalDate dueDate;
 
     private double roomRent;
-
     private double electricityBill;
-
     private double waterBill;
-
     private double maintenanceCharge;
-
-    private double lateFine;
-
-    private double totalAmount;
 
     private String status;
 
-    @JsonBackReference("tenant-rent")
-    @ManyToOne
-    @JoinColumn(name = "tenant_id")
-    private Tenant tenant;
-
-    @OneToOne(mappedBy = "rent")
-    private Payment payment;
+    private long tenantId;
 
 
-    public Rent(int month,
-                int year,
-                LocalDate dueDate,
-                double roomRent,
-                double electricityBill,
-                double waterBill,
-                double maintenanceCharge,
-                double lateFine,
-                double totalAmount,
-                String status) {
+    public RentRequest() {
+    }
+
+
+    public RentRequest(int month,
+                       int year,
+                       LocalDate dueDate,
+                       double roomRent,
+                       double electricityBill,
+                       double waterBill,
+                       double maintenanceCharge,
+                       String status,
+                       long tenantId) {
 
         this.month = month;
         this.year = year;
@@ -60,23 +39,10 @@ public class Rent {
         this.electricityBill = electricityBill;
         this.waterBill = waterBill;
         this.maintenanceCharge = maintenanceCharge;
-        this.lateFine = lateFine;
-        this.totalAmount = totalAmount;
         this.status = status;
+        this.tenantId = tenantId;
     }
 
-
-    public Rent() {
-    }
-
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public int getMonth() {
         return month;
@@ -134,22 +100,6 @@ public class Rent {
         this.maintenanceCharge = maintenanceCharge;
     }
 
-    public double getLateFine() {
-        return lateFine;
-    }
-
-    public void setLateFine(double lateFine) {
-        this.lateFine = lateFine;
-    }
-
-    public double getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(double totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-
     public String getStatus() {
         return status;
     }
@@ -158,19 +108,11 @@ public class Rent {
         this.status = status;
     }
 
-    public Tenant getTenant() {
-        return tenant;
+    public long getTenantId() {
+        return tenantId;
     }
 
-    public void setTenant(Tenant tenant) {
-        this.tenant = tenant;
-    }
-
-    public Payment getPayment() {
-        return payment;
-    }
-
-    public void setPayment(Payment payment) {
-        this.payment = payment;
+    public void setTenantId(long tenantId) {
+        this.tenantId = tenantId;
     }
 }
