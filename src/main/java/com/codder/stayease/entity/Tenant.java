@@ -25,26 +25,39 @@ public class Tenant {
     private String occupation;
 
 
+    // User ↔ Tenant
     @JsonBackReference("user-tenant")
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
 
+
+    // Tenant ↔ Allocation
     @OneToMany(mappedBy = "tenant")
     private List<Allocation> allocations;
 
+
+    // Tenant ↔ Rent
     @OneToMany(mappedBy = "tenant")
     private List<Rent> rents;
 
+
+    // Tenant ↔ Complaint
     @JsonManagedReference("tenant-complaint")
     @OneToMany(mappedBy = "tenant")
     private List<Complaint> complaints;
 
+
+    // Tenant ↔ Visitor
+    @JsonManagedReference("tenant-visitor")
     @OneToMany(mappedBy = "tenant")
     private List<Visitor> visitors;
 
-    public Tenant(String guardianName, String guardianPhone,
-                  String address, String aadhaarNo,
+
+    public Tenant(String guardianName,
+                  String guardianPhone,
+                  String address,
+                  String aadhaarNo,
                   String occupation) {
 
         this.guardianName = guardianName;
@@ -54,8 +67,10 @@ public class Tenant {
         this.occupation = occupation;
     }
 
+
     public Tenant() {
     }
+
 
     public long getId() {
         return id;
@@ -65,6 +80,7 @@ public class Tenant {
         this.id = id;
     }
 
+
     public String getGuardianName() {
         return guardianName;
     }
@@ -72,6 +88,7 @@ public class Tenant {
     public void setGuardianName(String guardianName) {
         this.guardianName = guardianName;
     }
+
 
     public String getGuardianPhone() {
         return guardianPhone;
@@ -81,6 +98,7 @@ public class Tenant {
         this.guardianPhone = guardianPhone;
     }
 
+
     public String getAddress() {
         return address;
     }
@@ -88,6 +106,7 @@ public class Tenant {
     public void setAddress(String address) {
         this.address = address;
     }
+
 
     public String getAadhaarNo() {
         return aadhaarNo;
@@ -97,6 +116,7 @@ public class Tenant {
         this.aadhaarNo = aadhaarNo;
     }
 
+
     public String getOccupation() {
         return occupation;
     }
@@ -104,6 +124,7 @@ public class Tenant {
     public void setOccupation(String occupation) {
         this.occupation = occupation;
     }
+
 
     public User getUser() {
         return user;
@@ -113,6 +134,7 @@ public class Tenant {
         this.user = user;
     }
 
+
     public List<Allocation> getAllocations() {
         return allocations;
     }
@@ -120,6 +142,7 @@ public class Tenant {
     public void setAllocations(List<Allocation> allocations) {
         this.allocations = allocations;
     }
+
 
     public List<Rent> getRents() {
         return rents;
@@ -129,6 +152,7 @@ public class Tenant {
         this.rents = rents;
     }
 
+
     public List<Complaint> getComplaints() {
         return complaints;
     }
@@ -136,6 +160,7 @@ public class Tenant {
     public void setComplaints(List<Complaint> complaints) {
         this.complaints = complaints;
     }
+
 
     public List<Visitor> getVisitors() {
         return visitors;

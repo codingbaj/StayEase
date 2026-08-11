@@ -1,17 +1,8 @@
-package com.codder.stayease.entity;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
+package com.codder.stayease.dto;
 
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "visitor")
-public class Visitor {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+public class VisitorRequest {
 
     private String visitorName;
 
@@ -25,18 +16,16 @@ public class Visitor {
 
     private String exitTime;
 
-    @JsonBackReference("tenant-visitor")
-    @ManyToOne
-    @JoinColumn(name = "tenant_id")
-    private Tenant tenant;
+    private long tenantId;
 
 
-    public Visitor(String visitorName,
-                   String visitorPhone,
-                   LocalDate visitDate,
-                   String purpose,
-                   String entryTime,
-                   String exitTime) {
+    public VisitorRequest(String visitorName,
+                          String visitorPhone,
+                          LocalDate visitDate,
+                          String purpose,
+                          String entryTime,
+                          String exitTime,
+                          long tenantId) {
 
         this.visitorName = visitorName;
         this.visitorPhone = visitorPhone;
@@ -44,19 +33,11 @@ public class Visitor {
         this.purpose = purpose;
         this.entryTime = entryTime;
         this.exitTime = exitTime;
+        this.tenantId = tenantId;
     }
 
 
-    public Visitor() {
-    }
-
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
+    public VisitorRequest() {
     }
 
 
@@ -114,11 +95,11 @@ public class Visitor {
     }
 
 
-    public Tenant getTenant() {
-        return tenant;
+    public long getTenantId() {
+        return tenantId;
     }
 
-    public void setTenant(Tenant tenant) {
-        this.tenant = tenant;
+    public void setTenantId(long tenantId) {
+        this.tenantId = tenantId;
     }
 }
