@@ -1,5 +1,6 @@
 package com.codder.stayease.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -18,15 +19,20 @@ public class Allocation {
 
     private String status;
 
+    @JsonBackReference("tenant-allocation")
     @ManyToOne
     @JoinColumn(name = "tenant_id")
     private Tenant tenant;
 
+    @JsonBackReference("bed-allocation")
     @ManyToOne
     @JoinColumn(name = "bed_id")
     private Bed bed;
 
-    public Allocation(LocalDate checkInDate, LocalDate checkOutDate, String status) {
+    public Allocation(LocalDate checkInDate,
+                      LocalDate checkOutDate,
+                      String status) {
+
         this.checkInDate = checkInDate;
         this.checkOutDate = checkOutDate;
         this.status = status;
