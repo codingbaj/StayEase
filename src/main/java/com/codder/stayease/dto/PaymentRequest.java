@@ -1,58 +1,26 @@
-package com.codder.stayease.entity;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
+package com.codder.stayease.dto;
 
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "payment")
-public class Payment {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+public class PaymentRequest {
 
     private double amount;
-
     private LocalDate paymentDate;
-
     private String paymentMethod;
-
     private String transactionId;
-
     private String status;
+    private long rentId;
 
-    @JsonBackReference("rent-payment")
-    @OneToOne
-    @JoinColumn(name = "rent_id")
-    private Rent rent;
-
-
-    public Payment(double amount,
-                   LocalDate paymentDate,
-                   String paymentMethod,
-                   String transactionId,
-                   String status) {
-
+    public PaymentRequest(double amount, LocalDate paymentDate, String paymentMethod, String transactionId, String status, long rentId) {
         this.amount = amount;
         this.paymentDate = paymentDate;
         this.paymentMethod = paymentMethod;
         this.transactionId = transactionId;
         this.status = status;
+        this.rentId = rentId;
     }
 
-
-    public Payment() {
-    }
-
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
+    public PaymentRequest() {
     }
 
     public double getAmount() {
@@ -95,11 +63,11 @@ public class Payment {
         this.status = status;
     }
 
-    public Rent getRent() {
-        return rent;
+    public long getRentId() {
+        return rentId;
     }
 
-    public void setRent(Rent rent) {
-        this.rent = rent;
+    public void setRentId(long rentId) {
+        this.rentId = rentId;
     }
 }
