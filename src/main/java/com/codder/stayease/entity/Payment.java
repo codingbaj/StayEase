@@ -28,7 +28,6 @@ public class Payment {
     @JoinColumn(name = "rent_id")
     private Rent rent;
 
-
     public Payment(double amount,
                    LocalDate paymentDate,
                    String paymentMethod,

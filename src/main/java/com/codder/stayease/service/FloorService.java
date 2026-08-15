@@ -2,12 +2,15 @@ package com.codder.stayease.service;
 
 import com.codder.stayease.Exception.ResourceNotFoundException;
 import com.codder.stayease.dto.FloorRequest;
+import com.codder.stayease.dto.FloorResponse;
 import com.codder.stayease.entity.Building;
 import com.codder.stayease.entity.Floor;
 import com.codder.stayease.repository.BuildingRepository;
 import com.codder.stayease.repository.FloorRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,55 +18,116 @@ import java.util.List;
 public class FloorService {
 
     @Autowired
-    private FloorRepository Floorepo;
+    private FloorRepository floorRepo;
 
-   @Autowired
-    private BuildingRepository Buildingrepo;
+    @Autowired
+    private BuildingRepository buildingRepo;
 
-    public Floor addFloor(FloorRequest request) {
 
-        Building building = Buildingrepo.findById(request.getBuildingId()).orElseThrow(()->
-                new ResourceNotFoundException("Building not found!"));
+    // =========================
+    // ADD FLOOR
+    // =========================
 
+    @Transactional
+    public FloorResponse addFloor(FloorRequest request) {
+
+        Building building = buildingRepo.findById(request.getBuildingId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Building not found!"
+                        )
+                );
 
         Floor floor = new Floor();
 
         floor.setFloorNumber(request.getFloorNumber());
-
         floor.setBuilding(building);
 
-        return Floorepo.save(floor);
+        Floor savedFloor = floorRepo.save(floor);
+
+        return FloorResponse.fromEntity(savedFloor);
     }
 
-    public List<Floor> getAllFloor() {
-        return Floorepo.findAll();
+
+    // =========================
+    // GET ALL FLOORS
+    // =========================
+
+    @Transactional(readOnly = true)
+    public List<FloorResponse> getAllFloor() {
+
+        return floorRepo.findAll()
+                .stream()
+                .map(FloorResponse::fromEntity)
+                .toList();
     }
 
-    public Floor getById(long id) {
 
-        return Floorepo.findById(id).
-                orElseThrow(()-> new ResourceNotFoundException("Floor not Found!"));
+    // =========================
+    // GET FLOOR BY ID
+    // =========================
+
+    @Transactional(readOnly = true)
+    public FloorResponse getById(long id) {
+
+        Floor floor = floorRepo.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Floor not Found!"
+                        )
+                );
+
+        return FloorResponse.fromEntity(floor);
     }
 
-    public Floor updateFloor(long id , FloorRequest request) {
 
-        Floor floor = Floorepo.findById(id).
-                orElseThrow(()->new ResourceNotFoundException("Floor not Found!"));
+    // =========================
+    // UPDATE FLOOR
+    // =========================
 
-        Building building = Buildingrepo.findById(request.getBuildingId())
-                .orElseThrow(()-> new ResourceNotFoundException("Building not Found!"));
+    @Transactional
+    public FloorResponse updateFloor(
+            long id,
+            FloorRequest request) {
+
+        Floor floor = floorRepo.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Floor not Found!"
+                        )
+                );
+
+        Building building = buildingRepo.findById(
+                request.getBuildingId()
+        ).orElseThrow(() ->
+                new ResourceNotFoundException(
+                        "Building not Found!"
+                )
+        );
 
         floor.setFloorNumber(request.getFloorNumber());
         floor.setBuilding(building);
 
-        return Floorepo.save(floor);
+        Floor updatedFloor = floorRepo.save(floor);
+
+        return FloorResponse.fromEntity(updatedFloor);
     }
 
+
+    // =========================
+    // DELETE FLOOR
+    // =========================
+
+    @Transactional
     public void deleteFloor(long id) {
 
-        Floor floor = Floorepo.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("Floor not Found!"));
+        Floor floor = floorRepo.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Floor not Found!"
+                        )
+                );
 
-        Floorepo.delete(floor);
+        floorRepo.delete(floor);
     }
 }

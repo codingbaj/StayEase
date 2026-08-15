@@ -1,6 +1,7 @@
 package com.codder.stayease.controller;
 
 import com.codder.stayease.dto.BedRequest;
+import com.codder.stayease.dto.BedResponse;
 import com.codder.stayease.entity.Bed;
 import com.codder.stayease.response.ApiResponse;
 import com.codder.stayease.service.BedService;
@@ -16,8 +17,16 @@ public class BedController {
     @Autowired
     private BedService service;
 
+
+    // =========================
+    // ADD
+    // =========================
+
     @PostMapping("/add")
-    public ApiResponse addBed(@RequestBody BedRequest request){
+    public ApiResponse addBed(
+            @RequestBody BedRequest request
+    ) {
+
         Bed bed = service.addBed(request);
 
         return new ApiResponse(
@@ -27,29 +36,58 @@ public class BedController {
         );
     }
 
+
+    // =========================
+    // GET ALL
+    // =========================
+
     @GetMapping("/all")
-    public ApiResponse getAllBed(){
-        List<Bed> bed = service.getAllBed();
+    public ApiResponse getAllBed() {
+
+        List<BedResponse> beds =
+                service.getAllBed();
+
         return new ApiResponse(
-                true ,
-                "Successfully all beds Fetched!",
-                bed
+                true,
+                "Successfully All Beds Fetched!",
+                beds
         );
     }
+
+
+    // =========================
+    // GET BY ID
+    // =========================
 
     @GetMapping("/{id}")
-    public ApiResponse getbyId(@PathVariable long id){
-        Bed bed = service.getById(id);
+    public ApiResponse getById(
+            @PathVariable long id
+    ) {
+
+        BedResponse bed =
+                service.getById(id);
+
         return new ApiResponse(
-                true ,
-                "Successfully all beds Fetched!",
+                true,
+                "Successfully Bed Fetched!",
                 bed
         );
     }
 
+
+    // =========================
+    // UPDATE
+    // =========================
+
     @PutMapping("/update/{id}")
-    public ApiResponse updateById(@PathVariable long id , @RequestBody BedRequest request){
-        Bed bed  = service.updateById(id,request);
+    public ApiResponse updateById(
+            @PathVariable long id,
+            @RequestBody BedRequest request
+    ) {
+
+        BedResponse bed =
+                service.updateById(id, request);
+
         return new ApiResponse(
                 true,
                 "Bed Successfully Updated!",
@@ -57,8 +95,16 @@ public class BedController {
         );
     }
 
+
+    // =========================
+    // DELETE
+    // =========================
+
     @DeleteMapping("/delete/{id}")
-    public ApiResponse deleteById(@PathVariable long id){
+    public ApiResponse deleteById(
+            @PathVariable long id
+    ) {
+
         service.deleteById(id);
 
         return new ApiResponse(
@@ -67,6 +113,4 @@ public class BedController {
                 null
         );
     }
-
-
 }

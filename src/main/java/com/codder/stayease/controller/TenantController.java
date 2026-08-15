@@ -1,6 +1,7 @@
 package com.codder.stayease.controller;
 
 import com.codder.stayease.dto.TenantRequest;
+import com.codder.stayease.dto.TenantResponse;
 import com.codder.stayease.entity.Tenant;
 import com.codder.stayease.entity.User;
 import com.codder.stayease.response.ApiResponse;
@@ -19,27 +20,34 @@ public class TenantController {
     private TenantService service;
 
 
+    // =========================
     // ADD TENANT
+    // =========================
+
     @PostMapping("/add")
     public ApiResponse addTenant(
-            @RequestBody TenantRequest request) {
+            @RequestBody TenantRequest request
+    ) {
 
-        Tenant tenant = service.addTenant(request);
+        TenantResponse tenant =
+                service.addTenant(request);
 
         return new ApiResponse(
                 true,
-                tenant.getUser().getName()
-                        + " Successfully Added for Tenant!",
+                "Tenant Successfully Added!",
                 tenant
         );
     }
 
 
+    // =========================
     // GET ALL TENANTS
+    // =========================
+
     @GetMapping("/all")
     public ApiResponse getAllTenant() {
 
-        List<Tenant> tenants =
+        List<TenantResponse> tenants =
                 service.getAllTenant();
 
         return new ApiResponse(
@@ -50,15 +58,22 @@ public class TenantController {
     }
 
 
-    // GET LOGGED-IN TENANT
+    // =========================
+    // LOGGED-IN TENANT
+    // =========================
+
     @GetMapping("/me")
     public ApiResponse getMyTenant(
-            Authentication authentication) {
+            Authentication authentication
+    ) {
 
-        User user = (User) authentication.getPrincipal();
+        User user =
+                (User) authentication.getPrincipal();
 
         Tenant tenant =
-                service.getTenantByUserId(user.getId());
+                service.getTenantByUserId(
+                        user.getId()
+                );
 
         return new ApiResponse(
                 true,
@@ -68,45 +83,58 @@ public class TenantController {
     }
 
 
-    // GET TENANT BY ID
+    // =========================
+    // GET BY ID
+    // =========================
+
     @GetMapping("/{id}")
     public ApiResponse getTenantById(
-            @PathVariable long id) {
+            @PathVariable long id
+    ) {
 
-        Tenant tenant =
+        TenantResponse tenant =
                 service.getTenantById(id);
 
         return new ApiResponse(
                 true,
-                tenant.getUser().getName()
-                        + "'s Data Successfully Fetched!",
+                "Tenant Successfully Fetched!",
                 tenant
         );
     }
 
 
-    // UPDATE TENANT
+    // =========================
+    // UPDATE
+    // =========================
+
     @PutMapping("/update/{id}")
     public ApiResponse updateTenantById(
             @PathVariable long id,
-            @RequestBody TenantRequest request) {
+            @RequestBody TenantRequest request
+    ) {
 
-        Tenant tenant =
-                service.updateTenantById(id, request);
+        TenantResponse tenant =
+                service.updateTenantById(
+                        id,
+                        request
+                );
 
         return new ApiResponse(
                 true,
-                tenant.getUser().getName()
-                        + "'s Data Successfully Updated!",
+                "Tenant Successfully Updated!",
                 tenant
         );
     }
 
 
-    // DELETE TENANT
+    // =========================
+    // DELETE
+    // =========================
+
     @DeleteMapping("/delete/{id}")
     public ApiResponse deleteTenantById(
-            @PathVariable long id) {
+            @PathVariable long id
+    ) {
 
         service.deleteTenantById(id);
 

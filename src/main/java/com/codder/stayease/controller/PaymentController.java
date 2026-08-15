@@ -1,10 +1,11 @@
 package com.codder.stayease.controller;
 
 import com.codder.stayease.dto.PaymentRequest;
-import com.codder.stayease.entity.Payment;
+import com.codder.stayease.dto.PaymentResponse;
 import com.codder.stayease.entity.User;
 import com.codder.stayease.response.ApiResponse;
 import com.codder.stayease.service.PaymentService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ public class PaymentController {
     public ApiResponse addPayment(
             @RequestBody PaymentRequest request) {
 
-        Payment payment =
+        PaymentResponse payment =
                 service.addPayment(request);
 
         return new ApiResponse(
@@ -52,7 +53,7 @@ public class PaymentController {
         User user =
                 (User) authentication.getPrincipal();
 
-        Payment payment =
+        PaymentResponse payment =
                 service.addPaymentForTenant(
                         request,
                         user.getId()
@@ -74,7 +75,7 @@ public class PaymentController {
     @GetMapping("/all")
     public ApiResponse getAllPayment() {
 
-        List<Payment> payments =
+        List<PaymentResponse> payments =
                 service.getAllPayment();
 
         return new ApiResponse(
@@ -94,7 +95,7 @@ public class PaymentController {
     public ApiResponse getPaymentById(
             @PathVariable long id) {
 
-        Payment payment =
+        PaymentResponse payment =
                 service.getPaymentById(id);
 
         return new ApiResponse(
@@ -117,7 +118,7 @@ public class PaymentController {
         User user =
                 (User) authentication.getPrincipal();
 
-        List<Payment> payments =
+        List<PaymentResponse> payments =
                 service.getMyPayments(
                         user.getId()
                 );
@@ -143,7 +144,7 @@ public class PaymentController {
         User user =
                 (User) authentication.getPrincipal();
 
-        Payment payment =
+        PaymentResponse payment =
                 service.getMyPaymentById(
                         id,
                         user.getId()
@@ -167,7 +168,7 @@ public class PaymentController {
             @PathVariable long id,
             @RequestBody PaymentRequest request) {
 
-        Payment payment =
+        PaymentResponse payment =
                 service.updatePaymentById(
                         id,
                         request

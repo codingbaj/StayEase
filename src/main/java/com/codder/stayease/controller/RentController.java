@@ -1,7 +1,7 @@
 package com.codder.stayease.controller;
 
 import com.codder.stayease.dto.RentRequest;
-import com.codder.stayease.entity.Rent;
+import com.codder.stayease.dto.RentResponse;
 import com.codder.stayease.entity.User;
 import com.codder.stayease.response.ApiResponse;
 import com.codder.stayease.service.RentService;
@@ -21,14 +21,14 @@ public class RentController {
 
     // =====================================================
     // ADD RENT
-    // ADMIN / STAFF
     // =====================================================
 
     @PostMapping("/add")
     public ApiResponse addRent(
             @RequestBody RentRequest request) {
 
-        Rent rent = service.addRent(request);
+        RentResponse rent =
+                service.addRent(request);
 
         return new ApiResponse(
                 true,
@@ -40,13 +40,12 @@ public class RentController {
 
     // =====================================================
     // GET ALL RENTS
-    // ADMIN / STAFF
     // =====================================================
 
     @GetMapping("/all")
     public ApiResponse getAllRent() {
 
-        List<Rent> rents =
+        List<RentResponse> rents =
                 service.getAllRent();
 
         return new ApiResponse(
@@ -59,14 +58,13 @@ public class RentController {
 
     // =====================================================
     // GET RENT BY ID
-    // ADMIN / STAFF
     // =====================================================
 
     @GetMapping("/{id}")
     public ApiResponse getRentById(
             @PathVariable long id) {
 
-        Rent rent =
+        RentResponse rent =
                 service.getRentById(id);
 
         return new ApiResponse(
@@ -79,7 +77,6 @@ public class RentController {
 
     // =====================================================
     // GET MY RENTS
-    // TENANT
     // =====================================================
 
     @GetMapping("/my")
@@ -89,7 +86,7 @@ public class RentController {
         User user =
                 (User) authentication.getPrincipal();
 
-        List<Rent> rents =
+        List<RentResponse> rents =
                 service.getMyRents(
                         user.getId()
                 );
@@ -104,7 +101,6 @@ public class RentController {
 
     // =====================================================
     // GET MY RENT BY ID
-    // TENANT
     // =====================================================
 
     @GetMapping("/my/{id}")
@@ -115,7 +111,7 @@ public class RentController {
         User user =
                 (User) authentication.getPrincipal();
 
-        Rent rent =
+        RentResponse rent =
                 service.getMyRentById(
                         id,
                         user.getId()
@@ -131,7 +127,6 @@ public class RentController {
 
     // =====================================================
     // UPDATE RENT
-    // ADMIN / STAFF
     // =====================================================
 
     @PutMapping("/update/{id}")
@@ -139,7 +134,7 @@ public class RentController {
             @PathVariable long id,
             @RequestBody RentRequest request) {
 
-        Rent rent =
+        RentResponse rent =
                 service.updateRentById(
                         id,
                         request
@@ -155,7 +150,6 @@ public class RentController {
 
     // =====================================================
     // DELETE RENT
-    // ADMIN / STAFF
     // =====================================================
 
     @DeleteMapping("/delete/{id}")

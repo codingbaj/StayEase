@@ -1,13 +1,12 @@
 package com.codder.stayease.service;
 
-
 import com.codder.stayease.Exception.ResourceNotFoundException;
 import com.codder.stayease.dto.TenantRequest;
+import com.codder.stayease.dto.TenantResponse;
 import com.codder.stayease.entity.Tenant;
 import com.codder.stayease.entity.User;
 import com.codder.stayease.repository.TenantRepository;
 import com.codder.stayease.repository.UserRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,57 +20,121 @@ public class TenantService {
     private UserRepository userRepo;
 
     @Autowired
-    private TenantRepository TenantRepo;
+    private TenantRepository tenantRepo;
+
+
+    // =========================
+    // ADD TENANT
+    // =========================
 
     @Transactional
-    public Tenant addTenant(TenantRequest request) {
+    public TenantResponse addTenant(TenantRequest request) {
 
         User user = userRepo.findById(request.getUserId())
-                .orElseThrow(()->new ResourceNotFoundException("User not Found!"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "User not Found!"
+                        )
+                );
 
         Tenant tenant = new Tenant();
+
         tenant.setAadhaarNo(request.getAadhaarNo());
         tenant.setAddress(request.getAddress());
         tenant.setGuardianName(request.getGuardianName());
         tenant.setGuardianPhone(request.getGuardianPhone());
         tenant.setOccupation(request.getOccupation());
+
         tenant.setUser(user);
+
         user.setTenant(tenant);
-        return TenantRepo.save(tenant);
+
+        Tenant savedTenant = tenantRepo.save(tenant);
+
+        return convertToResponse(savedTenant);
     }
 
-    public List<Tenant> getAllTenant() {
 
-        return TenantRepo.findAll() ;
+    // =========================
+    // GET ALL TENANTS
+    // =========================
+
+    public List<TenantResponse> getAllTenant() {
+
+        return tenantRepo.findAll()
+                .stream()
+                .map(this::convertToResponse)
+                .toList();
     }
 
-    public Tenant getTenantById(long id){
-        return TenantRepo.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Tenant not Found!"));
 
+    // =========================
+    // GET TENANT BY ID
+    // =========================
 
+    public TenantResponse getTenantById(long id) {
+
+        Tenant tenant = tenantRepo.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Tenant not Found!"
+                        )
+                );
+
+        return convertToResponse(tenant);
     }
+
+
+    // =========================
+    // GET LOGGED-IN TENANT
+    // =========================
+
+    public Tenant getTenantEntityByUserId(long userId) {
+
+        return tenantRepo.findByUserId(userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Tenant not Found for this User!"
+                        )
+                );
+    }
+
+
+    // =========================
+    // UPDATE TENANT
+    // =========================
 
     @Transactional
-    public Tenant updateTenantById(long id, TenantRequest request) {
+    public TenantResponse updateTenantById(
+            long id,
+            TenantRequest request
+    ) {
 
-        Tenant tenant = TenantRepo.findById(id)
+        Tenant tenant = tenantRepo.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Tenant Not Found!"));
+                        new ResourceNotFoundException(
+                                "Tenant Not Found!"
+                        )
+                );
 
         User newUser = userRepo.findById(request.getUserId())
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("User Not Found!"));
+                        new ResourceNotFoundException(
+                                "User Not Found!"
+                        )
+                );
 
         User oldUser = tenant.getUser();
 
-        // Remove Tenant from old User
-        if (oldUser != null && oldUser.getId() != newUser.getId()) {
+        // Remove tenant from old user
+        if (
+                oldUser != null &&
+                        oldUser.getId() != newUser.getId()
+        ) {
             oldUser.setTenant(null);
             userRepo.save(oldUser);
         }
 
-        // Set new relationship
         tenant.setUser(newUser);
         newUser.setTenant(tenant);
 
@@ -81,17 +144,27 @@ public class TenantService {
         tenant.setAddress(request.getAddress());
         tenant.setAadhaarNo(request.getAadhaarNo());
 
-        Tenant savedTenant = TenantRepo.save(tenant);
+        Tenant savedTenant = tenantRepo.save(tenant);
 
         userRepo.save(newUser);
 
-        return savedTenant;
+        return convertToResponse(savedTenant);
     }
 
+
+    // =========================
+    // DELETE TENANT
+    // =========================
+
     @Transactional
-    public void deleteTenantById(long id){
-        Tenant tenant = TenantRepo.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Tenant not Found!"));
+    public void deleteTenantById(long id) {
+
+        Tenant tenant = tenantRepo.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Tenant not Found!"
+                        )
+                );
 
         User user = tenant.getUser();
 
@@ -99,14 +172,63 @@ public class TenantService {
             user.setTenant(null);
             userRepo.save(user);
         }
-        TenantRepo.delete(tenant);
+
+        tenantRepo.delete(tenant);
     }
+
+
+    // =========================
+    // TENANT BY USER ID
+    // =========================
+
     public Tenant getTenantByUserId(long userId) {
 
-        return TenantRepo.findByUserId(userId)
+        return tenantRepo.findByUserId(userId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "Tenant not Found for this User!"
-                        ));
+                        )
+                );
+    }
+
+
+    // =========================
+    // ENTITY → RESPONSE
+    // =========================
+
+    private TenantResponse convertToResponse(Tenant tenant) {
+
+        User user = tenant.getUser();
+
+        if (user == null) {
+
+            return new TenantResponse(
+                    tenant.getId(),
+                    tenant.getGuardianName(),
+                    tenant.getGuardianPhone(),
+                    tenant.getAddress(),
+                    tenant.getAadhaarNo(),
+                    tenant.getOccupation(),
+                    0,
+                    null,
+                    null,
+                    null
+            );
+        }
+
+        return new TenantResponse(
+                tenant.getId(),
+
+                tenant.getGuardianName(),
+                tenant.getGuardianPhone(),
+                tenant.getAddress(),
+                tenant.getAadhaarNo(),
+                tenant.getOccupation(),
+
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getRole()
+        );
     }
 }

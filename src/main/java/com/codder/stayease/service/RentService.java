@@ -2,6 +2,7 @@ package com.codder.stayease.service;
 
 import com.codder.stayease.Exception.ResourceNotFoundException;
 import com.codder.stayease.dto.RentRequest;
+import com.codder.stayease.dto.RentResponse;
 import com.codder.stayease.entity.Rent;
 import com.codder.stayease.entity.Tenant;
 import com.codder.stayease.repository.RentRepository;
@@ -22,11 +23,51 @@ public class RentService {
 
 
     // =====================================================
-    // ADD RENT
-    // ADMIN / STAFF
+    // CONVERT RENT ENTITY -> RENT RESPONSE
     // =====================================================
 
-    public Rent addRent(RentRequest request) {
+    private RentResponse convertToResponse(Rent rent) {
+
+        Tenant tenant = rent.getTenant();
+
+        long tenantId = 0;
+        String tenantName = null;
+        String tenantEmail = null;
+
+        if (tenant != null) {
+
+            tenantId = tenant.getId();
+
+            if (tenant.getUser() != null) {
+                tenantName = tenant.getUser().getName();
+                tenantEmail = tenant.getUser().getEmail();
+            }
+        }
+
+        return new RentResponse(
+                rent.getId(),
+                rent.getMonth(),
+                rent.getYear(),
+                rent.getDueDate(),
+                rent.getRoomRent(),
+                rent.getElectricityBill(),
+                rent.getWaterBill(),
+                rent.getMaintenanceCharge(),
+                rent.getLateFine(),
+                rent.getTotalAmount(),
+                rent.getStatus(),
+                tenantId,
+                tenantName,
+                tenantEmail
+        );
+    }
+
+
+    // =====================================================
+    // ADD RENT
+    // =====================================================
+
+    public RentResponse addRent(RentRequest request) {
 
         Tenant tenant = tenantRepo.findById(request.getTenantId())
                 .orElseThrow(() ->
@@ -47,10 +88,9 @@ public class RentService {
                 request.getMaintenanceCharge()
         );
 
-        // No late fine when rent is created
+        // New rent starts with zero late fine
         rent.setLateFine(0);
 
-        // Initial total
         double totalAmount =
                 request.getRoomRent()
                         + request.getElectricityBill()
@@ -63,57 +103,63 @@ public class RentService {
 
         rent.setTenant(tenant);
 
-        return rentRepo.save(rent);
+        Rent savedRent = rentRepo.save(rent);
+
+        return convertToResponse(savedRent);
     }
 
 
     // =====================================================
     // GET ALL RENTS
-    // ADMIN / STAFF
     // =====================================================
 
-    public List<Rent> getAllRent() {
+    public List<RentResponse> getAllRent() {
 
-        return rentRepo.findAll();
+        return rentRepo.findAll()
+                .stream()
+                .map(this::convertToResponse)
+                .toList();
     }
 
 
     // =====================================================
     // GET RENT BY ID
-    // ADMIN / STAFF
     // =====================================================
 
-    public Rent getRentById(long id) {
+    public RentResponse getRentById(long id) {
 
-        return rentRepo.findById(id)
+        Rent rent = rentRepo.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "Rent Not Found!"
                         ));
+
+        return convertToResponse(rent);
     }
 
 
     // =====================================================
     // GET LOGGED-IN TENANT'S RENTS
-    // TENANT
     // =====================================================
 
-    public List<Rent> getMyRents(long userId) {
+    public List<RentResponse> getMyRents(long userId) {
 
-        return rentRepo.findByTenant_User_Id(userId);
+        return rentRepo.findByTenant_User_Id(userId)
+                .stream()
+                .map(this::convertToResponse)
+                .toList();
     }
 
 
     // =====================================================
     // GET ONE RENT OF LOGGED-IN TENANT
-    // TENANT
     // =====================================================
 
-    public Rent getMyRentById(
+    public RentResponse getMyRentById(
             long rentId,
             long userId) {
 
-        return rentRepo
+        Rent rent = rentRepo
                 .findByIdAndTenant_User_Id(
                         rentId,
                         userId
@@ -122,15 +168,16 @@ public class RentService {
                         new ResourceNotFoundException(
                                 "Rent Not Found for this Tenant!"
                         ));
+
+        return convertToResponse(rent);
     }
 
 
     // =====================================================
     // UPDATE RENT
-    // ADMIN / STAFF
     // =====================================================
 
-    public Rent updateRentById(
+    public RentResponse updateRentById(
             long id,
             RentRequest request) {
 
@@ -154,12 +201,15 @@ public class RentService {
         rent.setDueDate(request.getDueDate());
 
         rent.setRoomRent(request.getRoomRent());
+
         rent.setElectricityBill(
                 request.getElectricityBill()
         );
+
         rent.setWaterBill(
                 request.getWaterBill()
         );
+
         rent.setMaintenanceCharge(
                 request.getMaintenanceCharge()
         );
@@ -179,13 +229,14 @@ public class RentService {
 
         rent.setTenant(tenant);
 
-        return rentRepo.save(rent);
+        Rent savedRent = rentRepo.save(rent);
+
+        return convertToResponse(savedRent);
     }
 
 
     // =====================================================
     // DELETE RENT
-    // ADMIN / STAFF
     // =====================================================
 
     public void deleteRentById(long id) {
