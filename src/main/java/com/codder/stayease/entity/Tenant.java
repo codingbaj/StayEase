@@ -43,7 +43,15 @@ public class Tenant {
 
 
     // Tenant ↔ Complaint
-    @JsonManagedReference("tenant-complaint")
+    //
+    // NOTE: No @JsonManagedReference here.
+    // Complaint.java already handles this relationship
+    // with @JsonIgnoreProperties({"complaints"}) on its
+    // own "tenant" field, which prevents infinite JSON
+    // recursion without requiring a matching back-reference
+    // on this side. Adding @JsonManagedReference here without
+    // a matching @JsonBackReference in Complaint.java is what
+    // caused the "no back reference property found" crash.
     @OneToMany(mappedBy = "tenant")
     private List<Complaint> complaints;
 

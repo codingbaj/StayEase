@@ -1,6 +1,6 @@
 package com.codder.stayease.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
@@ -33,7 +33,7 @@ public class User {
     @Column(nullable = false)
     private boolean enabled = true;
 
-    @JsonBackReference("user-tenant")
+    @JsonManagedReference("user-tenant")
     @OneToOne(mappedBy = "user")
     private Tenant tenant;
 
