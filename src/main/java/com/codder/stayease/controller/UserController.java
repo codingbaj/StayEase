@@ -24,6 +24,12 @@ public class UserController {
     @PostMapping("/add")
     public ApiResponse addUser(
             @RequestBody User user) {
+        System.out.println("====================================");
+        System.out.println("POST /user/add REACHED CONTROLLER");
+        System.out.println("User name: " + user.getName());
+        System.out.println("User email: " + user.getEmail());
+        System.out.println("User role: " + user.getRole());
+        System.out.println("====================================");
 
         User savedUser =
                 service.addUser(user);
