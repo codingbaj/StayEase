@@ -1,9 +1,12 @@
 package com.codder.stayease.controller;
 
+import com.codder.stayease.dto.ChangePasswordRequest;
 import com.codder.stayease.entity.User;
 import com.codder.stayease.response.ApiResponse;
 import com.codder.stayease.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,17 +16,30 @@ public class UserController {
     @Autowired
     private UserService service;
 
-    @PostMapping("/add")
-    public ApiResponse addUser(@RequestBody User user) {
 
-        User savedUser = service.addUser(user);
+    // =====================================================
+    // ADD USER
+    // =====================================================
+
+    @PostMapping("/add")
+    public ApiResponse addUser(
+            @RequestBody User user) {
+
+        User savedUser =
+                service.addUser(user);
 
         return new ApiResponse(
                 true,
-                savedUser.getName()+" added successfully",
+                savedUser.getName()
+                        + " added successfully",
                 savedUser
         );
     }
+
+
+    // =====================================================
+    // GET ALL USERS
+    // =====================================================
 
     @GetMapping("/all")
     public ApiResponse getAllUser() {
@@ -35,8 +51,14 @@ public class UserController {
         );
     }
 
+
+    // =====================================================
+    // GET USER BY ID
+    // =====================================================
+
     @GetMapping("/{id}")
-    public ApiResponse getUserById(@PathVariable long id) {
+    public ApiResponse getUserById(
+            @PathVariable long id) {
 
         return new ApiResponse(
                 true,
@@ -45,30 +67,118 @@ public class UserController {
         );
     }
 
+
+    // =====================================================
+    // ADMIN UPDATE USER
+    //
+    // Password is NOT changed here.
+    //
+    // Admin can update:
+    // - Name
+    // - Email
+    // - Phone
+    // - Role
+    // - Enabled / Disabled
+    // =====================================================
+
     @PutMapping("/update/{id}")
-    public ApiResponse updateUser(@PathVariable long id,
-                                  @RequestBody User user) {
+    public ApiResponse updateUser(
+            @PathVariable long id,
+            @RequestBody User user) {
+
+        User updatedUser =
+                service.updateUser(id, user);
 
         return new ApiResponse(
                 true,
-                "User updated successfully",
-                service.updateUser(id, user)
+                "User details updated successfully",
+                updatedUser
         );
     }
 
+
+    // =====================================================
+    // ADMIN UPDATE ROLE
+    // =====================================================
+
     @PutMapping("/update-role/{id}")
-    public ApiResponse updateRole(@PathVariable long id,
-                                  @RequestParam String role) {
+    public ApiResponse updateRole(
+            @PathVariable long id,
+            @RequestParam String role) {
+
+        User user =
+                service.updateRole(id, role);
 
         return new ApiResponse(
                 true,
                 "User role updated successfully",
-                service.updateRole(id, role)
+                user
         );
     }
 
+
+    // =====================================================
+    // ADMIN ENABLE / DISABLE USER
+    // =====================================================
+
+    @PutMapping("/update-status/{id}")
+    public ApiResponse updateStatus(
+            @PathVariable long id,
+            @RequestParam boolean enabled) {
+
+        User user =
+                service.updateEnabled(
+                        id,
+                        enabled
+                );
+
+        return new ApiResponse(
+                true,
+                enabled
+                        ? "User enabled successfully"
+                        : "User disabled successfully",
+                user
+        );
+    }
+
+
+    // =====================================================
+    // LOGGED-IN USER CHANGE OWN PASSWORD
+    //
+    // User does NOT send user ID.
+    //
+    // Spring Security identifies the logged-in user.
+    // =====================================================
+
+    @PutMapping("/change-password")
+    public ApiResponse changeOwnPassword(
+            @RequestBody ChangePasswordRequest request,
+            Authentication authentication) {
+
+        User loggedInUser =
+                (User) authentication.getPrincipal();
+
+        User updatedUser =
+                service.changeOwnPassword(
+                        loggedInUser.getId(),
+                        request
+                );
+
+        return new ApiResponse(
+                true,
+                "Password changed successfully",
+                updatedUser
+        );
+    }
+
+
+    // =====================================================
+    // DELETE USER
+    // =====================================================
+
     @DeleteMapping("/delete/{id}")
-    public ApiResponse deleteUser(@PathVariable long id) {
+    public ApiResponse deleteUser(
+            @PathVariable long id) {
 
         service.deleteUser(id);
 
@@ -78,19 +188,4 @@ public class UserController {
                 null
         );
     }
-
-    @PutMapping("/update-password/{id}")
-    public ApiResponse updatePassword(
-            @PathVariable long id,
-            @RequestParam String password) {
-
-        User user = service.updatePassword(id, password);
-
-        return new ApiResponse(
-                true,
-                "Password updated successfully",
-                user
-        );
-    }
-
 }

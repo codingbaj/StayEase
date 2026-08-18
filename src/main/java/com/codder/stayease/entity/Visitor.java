@@ -1,6 +1,6 @@
 package com.codder.stayease.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -13,10 +13,12 @@ public class Visitor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(nullable = false)
     private String visitorName;
 
     private String visitorPhone;
 
+    @Column(nullable = false)
     private LocalDate visitDate;
 
     private String purpose;
@@ -25,18 +27,41 @@ public class Visitor {
 
     private String exitTime;
 
-    @JsonBackReference("tenant-visitor")
-    @ManyToOne
+    /*
+     * IMPORTANT:
+     *
+     * Do NOT use @JsonBackReference here.
+     *
+     * We want the tenant information to be returned
+     * when /visitor/all is called.
+     *
+     * We ignore the Tenant's visitors collection so
+     * Jackson does not create an infinite JSON loop.
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "tenant_id")
+    @JsonIgnoreProperties({
+            "visitors",
+            "complaints"
+    })
     private Tenant tenant;
 
 
-    public Visitor(String visitorName,
-                   String visitorPhone,
-                   LocalDate visitDate,
-                   String purpose,
-                   String entryTime,
-                   String exitTime) {
+    // =====================================================
+    // CONSTRUCTORS
+    // =====================================================
+
+    public Visitor() {
+    }
+
+
+    public Visitor(
+            String visitorName,
+            String visitorPhone,
+            LocalDate visitDate,
+            String purpose,
+            String entryTime,
+            String exitTime) {
 
         this.visitorName = visitorName;
         this.visitorPhone = visitorPhone;
@@ -47,9 +72,9 @@ public class Visitor {
     }
 
 
-    public Visitor() {
-    }
-
+    // =====================================================
+    // GETTERS & SETTERS
+    // =====================================================
 
     public long getId() {
         return id;

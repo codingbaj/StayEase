@@ -4,27 +4,29 @@ import java.time.LocalDate;
 
 public class ComplaintRequest {
 
+    private Long tenantId;
+
     private String title;
+
     private String description;
+
     private LocalDate complaintDate;
+
     private String status;
-    private long tenantId;
 
-    public ComplaintRequest(String title,
-                            String description,
-                            LocalDate complaintDate,
-                            String status,
-                            long tenantId) {
-
-        this.title = title;
-        this.description = description;
-        this.complaintDate = complaintDate;
-        this.status = status;
-        this.tenantId = tenantId;
-    }
 
     public ComplaintRequest() {
     }
+
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+    }
+
 
     public String getTitle() {
         return title;
@@ -34,6 +36,7 @@ public class ComplaintRequest {
         this.title = title;
     }
 
+
     public String getDescription() {
         return description;
     }
@@ -41,6 +44,7 @@ public class ComplaintRequest {
     public void setDescription(String description) {
         this.description = description;
     }
+
 
     public LocalDate getComplaintDate() {
         return complaintDate;
@@ -50,19 +54,12 @@ public class ComplaintRequest {
         this.complaintDate = complaintDate;
     }
 
+
     public String getStatus() {
         return status;
     }
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public long getTenantId() {
-        return tenantId;
-    }
-
-    public void setTenantId(long tenantId) {
-        this.tenantId = tenantId;
     }
 }

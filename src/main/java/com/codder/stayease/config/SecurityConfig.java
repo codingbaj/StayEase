@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 public class SecurityConfig {
@@ -15,104 +16,268 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    @Autowired
+    private CorsConfigurationSource corsConfigurationSource;
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http
+    ) throws Exception {
 
         http
-                .cors(cors -> {})
+
+                // =====================================================
+                // CORS
+                // =====================================================
+
+                .cors(cors ->
+                        cors.configurationSource(
+                                corsConfigurationSource
+                        )
+                )
+
+                // =====================================================
+                // CSRF
+                // =====================================================
+
                 .csrf(csrf -> csrf.disable())
 
+                // =====================================================
+                // STATELESS JWT
+                // =====================================================
+
                 .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        session.sessionCreationPolicy(
+                                SessionCreationPolicy.STATELESS
+                        )
                 )
+
+                // =====================================================
+                // AUTHORIZATION
+                // =====================================================
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // =========================
                         // PUBLIC
-                        // =========================
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/**")
+                        .permitAll()
 
-                        // =========================
-                        // USER MANAGEMENT - ADMIN ONLY
-                        // =========================
-                        .requestMatchers("/user/**").hasRole("ADMIN")
+                        // =================================================
+                        // OPTIONS / CORS PREFLIGHT
+                        // =================================================
 
-                        // =========================
-                        // TENANT PROFILE
-                        // =========================
-                        .requestMatchers("/tenant/me").hasRole("TENANT")
-                        .requestMatchers("/tenant/**").hasAnyRole("ADMIN", "STAFF")
+                        .requestMatchers(HttpMethod.OPTIONS, "/**")
+                        .permitAll()
 
-                        // =========================
+                        // =================================================
+                        // PASSWORD
+                        // =================================================
+
+                        .requestMatchers("/user/change-password")
+                        .hasAnyRole(
+                                "ADMIN",
+                                "STAFF",
+                                "TENANT"
+                        )
+
+                        // =================================================
+                        // USER
+                        // =================================================
+
+                        .requestMatchers("/user/**")
+                        .hasRole("ADMIN")
+
+                        // =================================================
+                        // TENANT
+                        // =================================================
+
+                        .requestMatchers("/tenant/me")
+                        .hasRole("TENANT")
+
+                        .requestMatchers("/tenant/**")
+                        .hasAnyRole(
+                                "ADMIN",
+                                "STAFF"
+                        )
+
+                        // =================================================
                         // RENT
-                        // =========================
-                        .requestMatchers("/rent/my/**").hasRole("TENANT")
-                        .requestMatchers("/rent/**").hasAnyRole("ADMIN", "STAFF")
+                        // =================================================
 
-                        // =========================
+                        .requestMatchers("/rent/my/**")
+                        .hasRole("TENANT")
+
+                        .requestMatchers("/rent/**")
+                        .hasAnyRole(
+                                "ADMIN",
+                                "STAFF"
+                        )
+
+                        // =================================================
                         // PAYMENT
-                        // =========================
-                        .requestMatchers("/payment/my/**").hasRole("TENANT")
-                        .requestMatchers("/payment/pay").hasRole("TENANT")
-                        .requestMatchers("/payment/**").hasAnyRole("ADMIN", "STAFF")
+                        // =================================================
 
-                        // =========================
-                        // COMPLAINT - TENANT OWN DATA
-                        // =========================
-                        .requestMatchers("/complaint/my/**").hasRole("TENANT")
-                        .requestMatchers("/complaint/my").hasRole("TENANT")
-                        // Tenant creates only through /my/add; management uses /complaint/add
-                        .requestMatchers("/complaint/add").hasAnyRole("ADMIN", "STAFF")
-                        .requestMatchers("/complaint/**").hasAnyRole("ADMIN", "STAFF")
+                        .requestMatchers("/payment/my/**")
+                        .hasRole("TENANT")
 
-                        // =========================
-                        // VISITOR - TENANT OWN DATA
-                        // =========================
-                        .requestMatchers("/visitor/my/**").hasRole("TENANT")
-                        .requestMatchers("/visitor/my").hasRole("TENANT")
-                        .requestMatchers("/visitor/add").hasAnyRole("ADMIN", "STAFF")
-                        .requestMatchers("/visitor/**").hasAnyRole("ADMIN", "STAFF")
+                        .requestMatchers("/payment/pay")
+                        .hasRole("TENANT")
 
-                        // =========================
+                        .requestMatchers("/payment/**")
+                        .hasAnyRole(
+                                "ADMIN",
+                                "STAFF"
+                        )
+
+                        // =================================================
+                        // COMPLAINT
+                        // =================================================
+
+                        .requestMatchers("/complaint/my/**")
+                        .hasRole("TENANT")
+
+                        .requestMatchers("/complaint/my")
+                        .hasRole("TENANT")
+
+                        .requestMatchers("/complaint/add")
+                        .hasAnyRole(
+                                "ADMIN",
+                                "STAFF"
+                        )
+
+                        .requestMatchers("/complaint/**")
+                        .hasAnyRole(
+                                "ADMIN",
+                                "STAFF"
+                        )
+
+                        // =================================================
+                        // VISITOR
+                        // =================================================
+
+                        .requestMatchers("/visitor/my/**")
+                        .hasRole("TENANT")
+
+                        .requestMatchers("/visitor/my")
+                        .hasRole("TENANT")
+
+                        .requestMatchers("/visitor/add")
+                        .hasAnyRole(
+                                "ADMIN",
+                                "STAFF"
+                        )
+
+                        .requestMatchers("/visitor/**")
+                        .hasAnyRole(
+                                "ADMIN",
+                                "STAFF"
+                        )
+
+                        // =================================================
                         // ALLOCATION
-                        // Tenant can only view own allocation.
-                        // Admin/Staff manage allocations.
-                        // =========================
-                        .requestMatchers("/allocation/my/**").hasRole("TENANT")
-                        .requestMatchers("/allocation/my").hasRole("TENANT")
-                        .requestMatchers("/allocation/**").hasAnyRole("ADMIN", "STAFF")
+                        // =================================================
 
-                        // =========================
+                        .requestMatchers("/allocation/my/**")
+                        .hasRole("TENANT")
+
+                        .requestMatchers("/allocation/my")
+                        .hasRole("TENANT")
+
+                        .requestMatchers("/allocation/**")
+                        .hasAnyRole(
+                                "ADMIN",
+                                "STAFF"
+                        )
+
+                        // =================================================
                         // NOTICE
-                        // Everyone authenticated can read notices.
-                        // Admin/Staff can manage notices.
-                        // =========================
-                        .requestMatchers(HttpMethod.GET, "/notice/**").authenticated()
-                        .requestMatchers("/notice/**").hasAnyRole("ADMIN", "STAFF")
+                        // =================================================
 
-                        // =========================
-                        // PROPERTY / INVENTORY
-                        // ADMIN manages; STAFF can read.
-                        // =========================
-                        .requestMatchers(HttpMethod.GET, "/building/**").hasAnyRole("ADMIN", "STAFF")
-                        .requestMatchers("/building/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/notice/**")
+                        .authenticated()
 
-                        .requestMatchers(HttpMethod.GET, "/floor/**").hasAnyRole("ADMIN", "STAFF")
-                        .requestMatchers("/floor/**").hasRole("ADMIN")
+                        .requestMatchers("/notice/**")
+                        .hasAnyRole(
+                                "ADMIN",
+                                "STAFF"
+                        )
 
-                        .requestMatchers(HttpMethod.GET, "/roomtype/**").hasAnyRole("ADMIN", "STAFF")
-                        .requestMatchers("/roomtype/**").hasRole("ADMIN")
+                        // =================================================
+                        // BUILDING
+                        // =================================================
 
-                        .requestMatchers(HttpMethod.GET, "/room/**").hasAnyRole("ADMIN", "STAFF")
-                        .requestMatchers("/room/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/building/**")
+                        .hasAnyRole(
+                                "ADMIN",
+                                "STAFF"
+                        )
 
-                        .requestMatchers(HttpMethod.GET, "/bed/**").hasAnyRole("ADMIN", "STAFF")
-                        .requestMatchers("/bed/**").hasRole("ADMIN")
+                        .requestMatchers("/building/**")
+                        .hasRole("ADMIN")
 
-                        // Anything not explicitly listed requires authentication.
-                        .anyRequest().authenticated()
+                        // =================================================
+                        // FLOOR
+                        // =================================================
+
+                        .requestMatchers(HttpMethod.GET, "/floor/**")
+                        .hasAnyRole(
+                                "ADMIN",
+                                "STAFF"
+                        )
+
+                        .requestMatchers("/floor/**")
+                        .hasRole("ADMIN")
+
+                        // =================================================
+                        // ROOM TYPE
+                        // =================================================
+
+                        .requestMatchers(HttpMethod.GET, "/roomtype/**")
+                        .hasAnyRole(
+                                "ADMIN",
+                                "STAFF"
+                        )
+
+                        .requestMatchers("/roomtype/**")
+                        .hasRole("ADMIN")
+
+                        // =================================================
+                        // ROOM
+                        // =================================================
+
+                        .requestMatchers(HttpMethod.GET, "/room/**")
+                        .hasAnyRole(
+                                "ADMIN",
+                                "STAFF"
+                        )
+
+                        .requestMatchers("/room/**")
+                        .hasRole("ADMIN")
+
+                        // =================================================
+                        // BED
+                        // =================================================
+
+                        .requestMatchers(HttpMethod.GET, "/bed/**")
+                        .hasAnyRole(
+                                "ADMIN",
+                                "STAFF"
+                        )
+
+                        .requestMatchers("/bed/**")
+                        .hasRole("ADMIN")
+
+                        // =================================================
+                        // EVERYTHING ELSE
+                        // =================================================
+
+                        .anyRequest()
+                        .authenticated()
                 )
+
+                // =====================================================
+                // JWT FILTER
+                // =====================================================
 
                 .addFilterBefore(
                         jwtAuthenticationFilter,

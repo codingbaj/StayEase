@@ -70,8 +70,8 @@ public class TenantController {
         User user =
                 (User) authentication.getPrincipal();
 
-        Tenant tenant =
-                service.getTenantByUserId(
+        TenantResponse tenant =
+                service.getTenantResponseByUserId(
                         user.getId()
                 );
 

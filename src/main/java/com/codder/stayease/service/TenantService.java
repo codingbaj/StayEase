@@ -212,6 +212,7 @@ public class TenantService {
                     0,
                     null,
                     null,
+                    null,
                     null
             );
         }
@@ -228,7 +229,19 @@ public class TenantService {
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
-                user.getRole()
+                user.getRole(),
+                user.getPhone()
         );
+    }
+    public TenantResponse getTenantResponseByUserId(long userId) {
+
+        Tenant tenant = tenantRepo.findByUserId(userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Tenant not Found for this User!"
+                        )
+                );
+
+        return convertToResponse(tenant);
     }
 }

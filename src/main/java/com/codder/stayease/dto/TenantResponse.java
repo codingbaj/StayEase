@@ -14,6 +14,7 @@ public class TenantResponse {
     private String userName;
     private String userEmail;
     private String userRole;
+    private String userPhone;
 
     public TenantResponse() {
     }
@@ -28,7 +29,8 @@ public class TenantResponse {
             long userId,
             String userName,
             String userEmail,
-            String userRole
+            String userRole,
+            String userPhone
     ) {
         this.id = id;
         this.guardianName = guardianName;
@@ -36,10 +38,12 @@ public class TenantResponse {
         this.address = address;
         this.aadhaarNo = aadhaarNo;
         this.occupation = occupation;
+
         this.userId = userId;
         this.userName = userName;
         this.userEmail = userEmail;
         this.userRole = userRole;
+        this.userPhone = userPhone;
     }
 
     public long getId() {
@@ -120,5 +124,13 @@ public class TenantResponse {
 
     public void setUserRole(String userRole) {
         this.userRole = userRole;
+    }
+
+    public String getUserPhone() {
+        return userPhone;
+    }
+
+    public void setUserPhone(String userPhone) {
+        this.userPhone = userPhone;
     }
 }

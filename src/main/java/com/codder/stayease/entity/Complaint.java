@@ -1,6 +1,6 @@
 package com.codder.stayease.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -13,29 +13,62 @@ public class Complaint {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(nullable = false)
     private String title;
 
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
+    @Column(nullable = false)
     private LocalDate complaintDate;
 
+    @Column(nullable = false)
     private String status;
 
-    @JsonBackReference("tenant-complaint")
-    @ManyToOne
-    @JoinColumn(name = "tenant_id")
+    /*
+     * IMPORTANT
+     *
+     * Do NOT use @JsonBackReference here.
+     *
+     * We want the tenant to be included in the
+     * Complaint JSON response so the frontend can display:
+     *
+     * row.tenant.user.name
+     *
+     * Ignore the Tenant's complaints collection to prevent
+     * infinite JSON recursion.
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "tenant_id", nullable = false)
+    @JsonIgnoreProperties({
+            "complaints"
+    })
     private Tenant tenant;
 
-    public Complaint(String title, String description,
-                     LocalDate complaintDate, String status) {
+
+    // =====================================================
+    // CONSTRUCTORS
+    // =====================================================
+
+    public Complaint() {
+    }
+
+    public Complaint(
+            String title,
+            String description,
+            LocalDate complaintDate,
+            String status) {
+
         this.title = title;
         this.description = description;
         this.complaintDate = complaintDate;
         this.status = status;
     }
 
-    public Complaint() {
-    }
+
+    // =====================================================
+    // GETTERS & SETTERS
+    // =====================================================
 
     public long getId() {
         return id;
@@ -45,6 +78,7 @@ public class Complaint {
         this.id = id;
     }
 
+
     public String getTitle() {
         return title;
     }
@@ -52,6 +86,7 @@ public class Complaint {
     public void setTitle(String title) {
         this.title = title;
     }
+
 
     public String getDescription() {
         return description;
@@ -61,6 +96,7 @@ public class Complaint {
         this.description = description;
     }
 
+
     public LocalDate getComplaintDate() {
         return complaintDate;
     }
@@ -69,6 +105,7 @@ public class Complaint {
         this.complaintDate = complaintDate;
     }
 
+
     public String getStatus() {
         return status;
     }
@@ -76,6 +113,7 @@ public class Complaint {
     public void setStatus(String status) {
         this.status = status;
     }
+
 
     public Tenant getTenant() {
         return tenant;
