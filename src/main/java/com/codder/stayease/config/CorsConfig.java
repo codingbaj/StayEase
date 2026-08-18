@@ -70,7 +70,10 @@ public class CorsConfig {
 
         // React/Vite frontend
         configuration.setAllowedOrigins(
-                List.of("http://localhost:5173")
+                List.of("http://localhost:5173",
+
+                        "https://stay-easy-frontend.vercel.app"
+                )
         );
 
         // HTTP methods
