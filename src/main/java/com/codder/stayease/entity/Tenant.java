@@ -57,7 +57,7 @@ public class Tenant {
 
 
     // Tenant ↔ Visitor
-    @JsonManagedReference("tenant-visitor")
+
     @OneToMany(mappedBy = "tenant")
     private List<Visitor> visitors;
 
